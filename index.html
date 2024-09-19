@@ -9,10 +9,135 @@
 
   <body>
     <div id="background">
-      <div id="text">Test</div>
+      <div id="text">Welcome to moincwaft!</div>
       <div id="input">
-        <input type="text" placeholder="Type here..." />
+        <input id="chat" type="text" placeholder="Type here..." onkeypress="onEnter(event)" />
       </div>
     </div>
+
+    <script>
+      class HtmlTemplate {
+        constructor(pattern) {
+          this.pattern = pattern;
+          this.value = "";
+          this.replaceable = "%s";
+        }
+        make(value) {
+          return this.pattern.replaceAll(this.replaceable, value);
+        }
+      }
+      var p = new HtmlTemplate("<p>%s</p>");
+      var div = new HtmlTemplate("<div>%s</div>");
+      var img = new HtmlTemplate("<img src=\"%s\" alt=\"%s\" />");
+
+      class Command {
+        constructor(text, aFunction) {
+          this.name = text;
+          this.do = aFunction;
+        }
+      }
+      class ChatLog {
+        constructor(size, firstMsg){
+          this.size = size;
+          this.log = [firstMsg];
+        }
+        list() {
+          let out = "";
+          for (let i = 0; i < this.log.length; i++) {
+            out += this.log[i];
+          }
+          return out;
+        }
+        in(msg) {
+          this.log.push(msg);
+        }
+        clear() {
+          this.log = [];
+        }
+      }
+      var theLog = new ChatLog(10, "Welcome to Moincwaft, bub!");
+
+      // chat input
+      function getChat() {
+        return document.getElementById("chat").value;
+      }
+      function setChat(txt) {
+        document.getElementById("chat").value = txt;
+      }
+      function clearChat() {setChat("");}
+
+      // text in chat log
+      function addText(html) {
+        document.getElementById("text").innerHTML += html;
+      }
+      function setText(html) {
+        document.getElementById("text").innerHTML = html;
+      }
+      function refresh() {setText(theLog.list());}
+      function clearText() {
+        theLog.clear();
+        setText("");
+      }
+
+      // flavours of text in chat log
+      function userMessage(msg) {
+        theLog.in(p.make(msg));
+      }
+
+      // data
+      var commands = [
+        new Command("foo", function() {
+          userMessage("... bar!");
+          refresh();
+        }),
+        new Command("clear", function() {
+          clearText();
+        })
+      ];
+      var br = "<br>";
+      var test = "=========="+br+"A VERY BIG STICK"+br+"=========="+
+                  br+"Test test test test."+br+"=========="; 
+
+      // events
+      function onEnter(event) {
+        if (event.keyCode == 13) {
+          let val = getChat();
+          clearChat()
+          if (val[0] == "/") {
+            // command reader
+            let cmd = val.replace("/", "");
+            let cmd_i = 0;
+            for (let i = 0; i < cmd.length; i++) {
+              if (i == cmd.length-1) {
+                cmd_i = i+1;
+                break;
+              }
+              if (cmd.charAt(i) == " ") {
+                cmd_i = i;
+                break;
+              }
+            }
+            let cmd_input = cmd.substring(0, cmd_i);
+            for (let c of commands) {
+              if (cmd_input == c.name) {
+                c.do();
+              }
+            }
+          } else {
+            // user text message
+            // TODO: escape/sanitize input
+            userMessage(val);
+            refresh();
+          }
+        }
+      }
+
+      // the main code
+      // loaded once with page
+      function main() {
+        commands[0].do();
+      }
+      main();
+    </script>
   </body>
 </html>

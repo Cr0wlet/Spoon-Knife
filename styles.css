@@ -6,6 +6,14 @@
 html, body {
   width: 100%;
   height: 100%;
+  font-size: 1.2em;
+}
+
+body, input {
+  font-family: monospace;
+}
+input {
+  font-size: 1em;
 }
 
 #background {
@@ -21,12 +29,22 @@ html, body {
 
 #text {
   flex: 1;
+  box-sizing: border-box;
+  color: white;
+  padding: 5px;
+  align-content: end;
 }
 
 #input {
+  display: flex;
+  flex-flow: row;
   height: 1.2em;
 }
 #input input[type="text"] {
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.6);
+  border: 0;
+  box-sizing: border-box;
   color: white;
+  flex: 1;
+  padding: 5px;
 }
